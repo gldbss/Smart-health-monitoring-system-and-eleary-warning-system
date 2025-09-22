@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Water Quality Predictor (ESP32)</title>
+</head>
+<body>
+  <h2>Water Quality Prediction</h2>
+  <input type="number" id="tds" placeholder="TDS (mg/L)"><br>
+  <input type="number" id="ph" step="0.01" placeholder="pH"><br>
+  <input type="number" id="turbidity" step="0.01" placeholder="Turbidity (NTU)"><br>
+  <button id="btn">Predict</button>
+  <h3>Result</h3>
+  <pre id="result"></pre>
+
+  <script>
+    var espHost = ''; // leave empty when page is served by ESP; otherwise set 'http://<esp_ip>'
+    document.getElementById('btn').addEventListener('click', async () => {
+      const tds = parseFloat(document.getElementById('tds').value);
+      const ph = parseFloat(document.getElementById('ph').value);
+      const turbidity = parseFloat(document.getElementById('turbidity').value);
+
+      if (Number.isNaN(tds) || Number.isNaN(ph) || Number.isNaN(turbidity)) {
+        document.getElementById('result').textContent = "Please enter valid numbers for all fields.";
+        return;
+      }
+
+      try {
+        const response = await fetch((espHost || '') + '/predict', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ tds, ph, turbidity })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          document.getElementById('result').textContent = "Error: " + (data.error || JSON.stringify(data));
+        } else {
+          document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        }
+      } catch (e) {
+        document.getElementById('result').textContent = "Network error: " + e.message;
+      }
+    });
+  </script>
+</body>
+</html>
