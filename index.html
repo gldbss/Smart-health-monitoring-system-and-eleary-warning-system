@@ -1,39 +1,61 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Water Quality Predictor (ESP32)</title>
+  <meta charset="utf-8"/>
+  <title>Community Health — Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background:#f2f6fb; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .page-banner { background:#1f67a8; color:#fff; padding:18px 0; text-align:center; }
+    .card { border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
+    .otp { width:56px; height:56px; font-size:22px; text-align:center; border-radius:8px; border:1px solid #e0e6ef; }
+    .small-links { font-size:14px; margin-top:12px; text-align:center; }
+  </style>
 </head>
 <body>
-  <h2>Water Quality Prediction</h2>
-  <input type="number" id="tds" placeholder="TDS (mg/L)"><br>
-  <input type="number" id="ph" step="0.01" placeholder="pH"><br>
-  <input type="number" id="turbidity" step="0.01" placeholder="Turbidity (NTU)"><br>
-  <button id="btn">Predict</button>
-  <h3>Result</h3>
-  <pre id="result"></pre>
+  <header class="page-banner">
+    <div class="container"><h3 style="margin:0">Community Health — Login</h3></div>
+  </header>
 
-  <script>
-    var espHost = ''; // leave empty when page is served by ESP; otherwise set 'http://<esp_ip>'
-    document.getElementById('btn').addEventListener('click', async () => {
-      const tds = parseFloat(document.getElementById('tds').value);
-      const ph = parseFloat(document.getElementById('ph').value);
-      const turbidity = parseFloat(document.getElementById('turbidity').value);
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card p-4">
+          <h4 class="mb-3 text-center">Login</h4>
 
-      if (Number.isNaN(tds) || Number.isNaN(ph) || Number.isNaN(turbidity)) {
-        document.getElementById('result').textContent = "Please enter valid numbers for all fields.";
-        return;
-      }
+          <div class="mb-3">
+            <label class="form-label">Enter Registered ID</label>
+            <input id="regId" class="form-control" placeholder="e.g. 001">
+          </div>
 
-      try {
-        const response = await fetch((espHost || '') + '/predict', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ tds, ph, turbidity })
-        });
+          <div class="mb-3">
+            <label class="form-label">Enter Phone Number</label>
+            <input id="phone" class="form-control" placeholder="+91...">
+          </div>
 
-        const data = await response.json();
-        if (!response.ok) {
+          <div class="mb-3">
+            <label class="form-label">Enter Your 4-Digit OTP</label>
+            <div class="d-flex gap-2">
+              <input maxlength="1" class="otp" id="o1" />
+              <input maxlength="1" class="otp" id="o2" />
+              <input maxlength="1" class="otp" id="o3" />
+              <input maxlength="1" class="otp" id="o4" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="role" id="roleAsha" checked>
+              <label class="form-check-label" for="roleAsha">ASHA Worker</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="role" id="roleDoctor">
+              <label class="form-check-label" for="roleDoctor">Doctor</label>
+            </div>
+          </div>
+
+          <div class="d-grid">
           document.getElementById('result').textContent = "Error: " + (data.error || JSON.stringify(data));
         } else {
           document.getElementById('result').textContent = JSON.stringify(data, null, 2);
