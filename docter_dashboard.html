@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Doctor Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background:#f2f6fb; font-family: system-ui, -apple-system, "Segoe UI", Roboto; }
+    .banner { background:#1f67a8; color:#fff; padding:16px 0; text-align:center; margin-bottom:12px; }
+    .card { border-radius:12px; box-shadow:0 10px 22px rgba(0,0,0,0.06); }
+    table thead th { background:#245d9f; color:#fff; }
+    .note { color:#6c757d; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <div class="banner"><h3>Doctor Dashboard</h3></div>
+  <div class="container">
+    <div class="card p-4 mb-3">
+      <h4 class="text-center mb-3">Water Quality Readings</h4>
+
+      <div class="row mb-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label"><strong>State</strong></label>
+          <select id="stateSelect" class="form-select">
+            <option>Uttar Pradesh</option>
+            <option>Assam</option>
+            <option>Sikkim</option>
+            <option>Tripura</option>
+            <option>Maharashtra</option>
+            <option>Karnataka</option>
+            <option>Tamil Nadu</option>
+            <option>Kerala</option>
+            <option>Bihar</option>
+            <option>Punjab</option>
+            <option>West Bengal</option>
+            <option>Haryana</option>
+            <option>Delhi</option>
+            <option>Rajasthan</option>
+            <option>Odisha</option>
+            <option>All</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button id="btnLoad" class="btn btn-primary">Load Readings</button>
+        </div>
+        <div class="col-md-4 text-end">
+          <a class="btn btn-link" href="index.html">Back</a>
+        </div>
+      </div>
+
+      <div id="msg" class="note">Select a state and click "Load Readings".</div>
+
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr><th>Device</th><th>Time</th><th>TDS</th><th>pH</th><th>Turbidity</th><th>WQI</th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function renderRows(arr) {
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+    if (!arr || arr.length === 0) {
+      document.getElementById('msg').textContent = 'Waiting for data for the selected state.';
+      return;
+    }
+    document.getElementById('msg').textContent = '';
+    arr.forEach(r => {
+      const tr = document.createElement('tr');
+      const ts = r.ts ? new Date(r.ts*1000) : null;
+      const timestr = ts ? ts.toLocaleString() : '';
+      tr.innerHTML = `<td>${r.device||''}</td><td>${timestr}</td><td>${r.tds||''}</td><td>${r.ph||''}</td><td>${r.turbidity||''}</td><td>${r.wqi||''}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function loadReadings() {
+    const sel = document.getElementById('stateSelect').value;
+    const stateParam = sel === 'All' ? 'all' : sel;
+    document.getElementById('msg').textContent = 'Loading...';
+    try {
+      const r = await fetch('/readings?state=' + encodeURIComponent(stateParam));
+      if (!r.ok) {
+        document.getElementById('msg').textContent = 'Server error: ' + r.status;
+        return;
+      }
+      const arr = await r.json();
+      renderRows(arr);
+    } catch (e) {
+      document.getElementById('msg').textContent = 'Network error: ' + e.message;
+    }
+  }
+
+  document.getElementById('btnLoad').addEventListener('click', loadReadings);
+
+  // default load Uttar Pradesh on open
+  window.addEventListener('load', () => {
+    document.getElementById('stateSelect').value = 'Uttar Pradesh';
+    loadReadings();
+  });
+</script>
+</body>
+</html>

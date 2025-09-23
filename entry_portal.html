@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Entry Portal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background:#f2f6fb; font-family: system-ui, -apple-system, "Segoe UI", Roboto; }
+    .page-banner { background:#1f67a8; color:#fff; padding:18px 0; text-align:center; }
+    .card { border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,0.05); }
+    small.text-muted { display:block; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <header class="page-banner">
+    <div class="container"><h3 style="margin:0">Community Health — Entry Portal</h3></div>
+  </header>
+
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card p-4">
+          <div class="mb-3">
+            <label class="form-label">State</label>
+            <select id="state" class="form-select">
+              <option selected>-- Select State --</option>
+              <option>Uttar Pradesh</option>
+              <option>Sikkim</option>
+              <option>Assam</option>
+              <option>Tripura</option>
+              <option>Maharashtra</option>
+              <option>Karnataka</option>
+              <option>Tamil Nadu</option>
+              <option>Kerala</option>
+              <option>Bihar</option>
+              <option>Punjab</option>
+              <option>West Bengal</option>
+              <option>Haryana</option>
+              <option>Delhi</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">District</label>
+            <select id="district" class="form-select">
+              <option>-- Select District --</option>
+            </select>
+            <small class="text-muted">First select state</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Village</label>
+            <select id="village" class="form-select">
+              <option>-- Select Village --</option>
+            </select>
+            <small class="text-muted">First select state and district</small>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" onclick="proceed()">Proceed to Login</button>
+            <button class="btn btn-outline-secondary" onclick="resetForm()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+  const nav = {
+    "Uttar Pradesh": {"Lucknow":["Aminabad","Chinhat"], "Kanpur":["Swaroop Nagar","Kalyanpur"]},
+    "Sikkim": {"Mangan":["Lingdong","Kabi"], "Gangtok":["Arithang","Central"]},
+    "Assam": {"Dhemaji":["Machkhowa","Bhelow"], "Guwahati":["Paltan Bazaar"]},
+    "Tripura": {"Dhalai":["Kamalpur","Ganganagar"]}
+  };
+
+  const stateEl = document.getElementById('state'), distEl = document.getElementById('district'), villEl = document.getElementById('village');
+
+  stateEl.addEventListener('change', () => {
+    distEl.innerHTML = '<option>-- Select District --</option>';
+    villEl.innerHTML = '<option>-- Select Village --</option>';
+    const s = stateEl.value;
+    if (nav[s]) Object.keys(nav[s]).forEach(d => distEl.add(new Option(d,d)));
+  });
+
+  distEl.addEventListener('change', () => {
+    villEl.innerHTML = '<option>-- Select Village --</option>';
+    const s = stateEl.value, d = distEl.value;
+    if (nav[s] && nav[s][d]) nav[s][d].forEach(v => villEl.add(new Option(v,v)));
+  });
+
+  function proceed(){ window.location.href = 'index.html'; }
+  function resetForm(){ stateEl.selectedIndex=0; distEl.innerHTML='<option>-- Select District --</option>'; villEl.innerHTML='<option>-- Select Village --</option>'; }
+</script>
+</body>
+</html>
